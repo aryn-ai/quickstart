@@ -134,3 +134,5 @@ pdf_docset = context.read.binary(paths, binary_format="pdf", metadata_provider=J
 
 pdf_docset.show(show_binary = False)
 ```
+
+The output of this cell will show informatoin about the DocSet, and show that there are two doucments included in it.
