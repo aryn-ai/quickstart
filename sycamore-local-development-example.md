@@ -45,7 +45,7 @@ pip install notebook
 
 1. Let's download the PDFs we want to use for our sample dataset. We will use two journal articles, "Attention Is All You Need" and "A Comprehensive Survey On Applications Of Transformers For Deep Learning Tasks." We will download these locally:
 
-'''
+```
 wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/1706.03762.pdf" 
 wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/2306.07303.pdf"
 ```
