@@ -41,13 +41,46 @@ pip install notebook
 ```
 
 
-## 2. Write an initial Sycamore job
+## Write an initial Sycamore job
 
-1. Let's download the PDFs we want to use for our sample dataset. We will use two journal articles, "Attention Is All You Need" and "A Comprehensive Survey On Applications Of Transformers For Deep Learning Tasks." We will download these locally:
+1. Download the PDFs we want to use for our sample dataset. We will use two journal articles, "Attention Is All You Need" and "A Comprehensive Survey On Applications Of Transformers For Deep Learning Tasks." We will download these locally:
 
 ```
 wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/1706.03762.pdf" 
 wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/2306.07303.pdf"
 ```
 
+2. Launch Juypter Notebook
 
+```
+juypter notebook
+```
+
+And create a new notebook for our Sycamore job.
+
+3. Write initial Sycamore Job. The actual notebook with this script is here. However, we will go through how to contruct it below.
+
+```
+import sys
+print(sys.version)
+
+
+from IPython.display import display, Image
+from IPython.display import IFrame
+from PIL import Image as PImage
+
+import sycamore
+from sycamore.data import Document
+from sycamore.transforms.embed import SentenceTransformerEmbedder
+from sycamore.transforms.extract_entity import OpenAIEntityExtractor
+from sycamore.llms import OpenAIModels, OpenAI, LLM
+from sycamore.transforms.partition import UnstructuredPdfPartitioner, HtmlPartitioner
+from sycamore.llms.prompts.default_prompts import TEXT_SUMMARIZER_GUIDANCE_PROMPT_CHAT
+from sycamore.transforms.summarize import Summarizer
+from sycamore.transforms.extract_table import TextractTableExtractor
+from sycamore.functions.document import split_and_convert_to_image, DrawBoxes
+from sycamore.tests.config import TEST_DIR
+from sycamore.transforms.merge_elements import GreedyTextElementMerger
+from sycamore.functions.tokenizer import HuggingFaceTokenizer
+from sycamore.scans.file_scan import JsonManifestMetadataProvider
+```
