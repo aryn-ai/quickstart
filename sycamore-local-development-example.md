@@ -20,7 +20,7 @@ In this example, we will:
 2. Install [Sycamore](https://github.com/aryn-ai/sycamore) locally.
 
 ```
-pip install Sycamore
+pip install sycamore
 ```
 
 For certain PDF processing operations, you also need to install poppler, which you can do with the OS-native package manager of your choice. For example, the command for Homebrew on Mac OS is:
@@ -35,7 +35,12 @@ brew install poppler
 pip install pillow
 ```
 
-4. 
+4. Install [Jupyter Notebook](https://jupyter.org/). If you already have a python notebook enviornment, you can choose to use that instead.
+
+```
+pip install notebook
+```
+
 
 ### 2. Iterate with a local version of Sycamore
 You may prefer to use a local IDE or notebook to iterate on your Sycamore script. You can install Scyamore locally, and configure it to load the output to the Aryn OpenSearch container from the quickstart.
