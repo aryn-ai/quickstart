@@ -56,11 +56,17 @@ wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/2306.07303.pdf"
 juypter notebook
 ```
 
-And create a new notebook for our Sycamore job.
+And create a new notebook for our Sycamore job. If you haven't set your OpenAI Key, do so before starting your notebook:
+
+```
+export OPENAI_API_KEY=YOUR-KEY
+```
 
 3. Write initial Sycamore Job. The actual notebook with this script is here. However, we will go through how to contruct it below.
 
-```
+a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamore:
+
+```python
 import sys
 print(sys.version)
 
@@ -83,4 +89,48 @@ from sycamore.tests.config import TEST_DIR
 from sycamore.transforms.merge_elements import GreedyTextElementMerger
 from sycamore.functions.tokenizer import HuggingFaceTokenizer
 from sycamore.scans.file_scan import JsonManifestMetadataProvider
+```
+
+b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publically accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
+
+```python
+metadata = {
+  "tmp/sycamore/data/1706.03762.pdf" : {
+    "_location": "https://arxiv.org/pdf/1706.03762.pdf"
+  }, "tmp/sycamore/data/2306.07303.pdf" : {
+    "_location": "https://arxiv.org/pdf/2306.07303.pdf"
+  }
+}
+
+with open("/tmp/sycamore/manifest.json", "w") as f:
+    json.dump(metadata, f)
+manifest_path = "/tmp/sycamore/manifest.json"
+```
+
+c. The next two cells just show a quick view of the PDF documents we will ingest, if we want to inspect them or take a closer look:
+
+```
+IFrame(str("tmp/sycamore/data/1706.03762.pdf"), width=700, height=600)
+```
+
+```
+IFrame(str("tmp/sycamore/data/2306.07303.pdf"), width=700, height=600)
+```
+
+d. We will now set some variables:
+
+```python
+paths = "tmp/sycamore/data/"
+font_path = "Arial.ttf"
+
+openai_llm = OpenAI(OpenAIModels.GPT_3_5_TURBO.value)
+```
+
+e. Now we initialize Sycamore, and create a [DocSet](https://sycamore.readthedocs.io/en/stable/key_concepts/concepts.html):
+
+```python
+context = sycamore.init()
+pdf_docset = context.read.binary(paths, binary_format="pdf", metadata_provider=JsonManifestMetadataProvider(manifest_path))
+
+pdf_docset.show(show_binary = False)
 ```
