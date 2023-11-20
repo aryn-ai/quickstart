@@ -4,8 +4,7 @@ The Quickstart configuration for Aryn Search easily launches containers for the 
 
 In this example, we will:
 
-- Launch the Aryn Stack using the Quickstart configuration
-- Install Sycamore locally
+- Install and run components
 - Write a Sycamore job
 - Iterate on that job
 - Run conversational search using the demo UI
@@ -42,22 +41,13 @@ pip install notebook
 ```
 
 
-### 2. Iterate with a local version of Sycamore
-You may prefer to use a local IDE or notebook to iterate on your Sycamore script. You can install Scyamore locally, and configure it to load the output to the Aryn OpenSearch container from the quickstart.
+## 2. Write an initial Sycamore job
 
-1. Install Sycamore locally. You can find the instructions [here](https://github.com/aryn-ai/sycamore#installation).
+1. Let's download the PDFs we want to use for our sample dataset. We will use two journal articles, "Attention Is All You Need" and "A Comprehensive Survey On Applications Of Transformers For Deep Learning Tasks." We will download these locally:
 
-2. [Optional] Install Jupyter to easily iterate on your script with a notebook. Instructions are [here](https://jupyter.org/install).
-
-
-3. To configure Sycamore to ingest into the local Aryn OpenSearch container:
-
+'''
+wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/1706.03762.pdf" 
+wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/2306.07303.pdf"
 ```
-# Write the embedded documents to a local OpenSearch index.
-os_client_args = {
-    "hosts" : [{"host": "localhost", "port": 9200}],
-    "use_ssl" : True,
-    "verify_certs" : False,
-    "http_auth" : ("admin", "admin")
-}
-```
+
+
