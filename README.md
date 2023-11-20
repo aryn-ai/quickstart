@@ -89,7 +89,7 @@ Keep the Aryn Stack running from the previous example, and then:
 
 1. Run the Sycamore HTTP Crawler container with an additional parameter:
 ```
-docker compose -f sort-all.yaml up
+docker compose --profile sort-all up
 ```
 This will crawl and download the data from the Sort Benchmark website. 
 
@@ -158,7 +158,8 @@ To clean up resources created in the Quickstart
 2. Run the reset script:
 
 ```
-docker compose -v -f reset.yaml up
+docker compose down
+docker compose run reset
 ```
 
 ## Troubleshooting
@@ -178,7 +179,8 @@ Look at the log messages for the sycamore container: `docker compose logs sycamo
 If the persistent data is in a confused state, you can reset it back to a blank state:
 
 ```
-docker compose -f reset.yaml up
+docker compose down
+docker compose run reset
 ```
 
 ## Reach out for help via email or on the Sycamore Slack channel
