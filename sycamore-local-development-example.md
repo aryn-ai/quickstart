@@ -6,7 +6,7 @@ In this example, we will:
 
 - Install and run components
 - Write a Sycamore job
-- Iterate on that job
+- Iterate on the job by adding metadata extraction using GenAI
 - Run conversational search using the demo UI
 
 ## Install and run components
@@ -232,5 +232,13 @@ k. This is the final part of the Sycamore job. We will load the data and vector 
 pdf_docset.write.opensearch(os_client_args=os_client_args, index_name=index, index_settings=index_settings)
 ```
 
+4. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
+- Using your internet browser, visit http://localhost:3000 . Make sure the demo UI container is still running from the Quickstart.
+- Make sure the index selected in the dropdown has the same name you provided in step 3j
+- Create a new conversation. Enter the name for your conversation in the text box in the left "Conversations" panel, and hit enter or click the "add convo" icon on the right of the text box.
+- As a sample question, you can ask "Who wrote Attention Is All You Need?"
 
+The results of the hybrid search are in the right hand panel, and you can click through to find the highlighted passage (step 3b enabled this). Though we are getting good results back from hybrid search, it would be nice if we could have the titles for each passage. In the next section, we will iterate on our Sycamore job, and use generative AI to extract some metadata.
+
+## Install and run components
 
