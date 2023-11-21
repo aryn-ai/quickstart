@@ -61,7 +61,7 @@ And create a new notebook for our Sycamore job. If you haven't set your OpenAI K
 export OPENAI_API_KEY=YOUR-KEY
 ```
 
-3. Write initial Sycamore Job. The actual notebook with this script is hereADD LOCATION!!!. However, we will go through how to contruct it below.
+3. Write initial Sycamore Job.
 
 a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamore:
 
