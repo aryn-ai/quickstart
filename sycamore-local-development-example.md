@@ -226,4 +226,11 @@ index_settings =  {
     }
 ```
 
+k. This is the final part of the Sycamore job. We will load the data and vector embeddings into the OpenSearch container using the configuration supplied above.
+
+```python
+pdf_docset.write.opensearch(os_client_args=os_client_args, index_name=index, index_settings=index_settings)
+```
+
+
 
