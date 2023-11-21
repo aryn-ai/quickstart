@@ -1,6 +1,6 @@
 # Write and iterate on Sycamore jobs locally
 
-The Quickstart configuration for Aryn Search easily launches containers for the full stack. However, you may prefer to write and iterate on your Sycamore data processing scripts locally, and load the output of these tests into the containerized Aryn stack. A benefit of this approach is that you can use a Jupyter Notebook to develop your scripts.
+The Quickstart configuration for Aryn Search easily launches containers for the full stack. However, you may prefer to write and iterate on your Sycamore data processing scripts locally, and load the output of these tests into the containerized Aryn stack. A benefit of this approach is that you can use a local Jupyter Notebook to develop your scripts.
 
 In this example, we will:
 
@@ -13,7 +13,7 @@ In this example, we will:
 1. Launch Aryn Search using the containerized Quickstart following [these instructions](https://github.com/aryn-ai/quickstart#readme). However, a few notes on this step specific to this example:
 
 - This example doesn't need Amazon Textract or Amazon S3, so you do not need to have or provide AWS credentials.
-- You do not need to load the full demo dataset referred to in the Quickstart README.
+- You do not need to load the full Sort Benchmark sample dataset referred to in the Quickstart README.
 
 2. Install [Sycamore](https://github.com/aryn-ai/sycamore) locally.
 
@@ -61,7 +61,7 @@ And create a new notebook for our Sycamore job. If you haven't set your OpenAI K
 export OPENAI_API_KEY=YOUR-KEY
 ```
 
-3. Write initial Sycamore Job. The actual notebook with this script is here. However, we will go through how to contruct it below.
+3. Write initial Sycamore Job. The actual notebook with this script is hereADD LOCATION!!!. However, we will go through how to contruct it below.
 
 a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamore:
 
@@ -90,7 +90,7 @@ from sycamore.functions.tokenizer import HuggingFaceTokenizer
 from sycamore.scans.file_scan import JsonManifestMetadataProvider
 ```
 
-b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publically accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
+b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publicly accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
 
 ```python
 metadata = {
@@ -106,7 +106,7 @@ with open("/tmp/sycamore/manifest.json", "w") as f:
 manifest_path = "/tmp/sycamore/manifest.json"
 ```
 
-c. The next two cells just show a quick view of the PDF documents we will ingest, if we want to inspect them or take a closer look:
+c. The next two cells will show a quick view of the PDF documents we will ingest, if we want to inspect them or take a closer look:
 
 ```
 IFrame(str("tmp/sycamore/data/1706.03762.pdf"), width=700, height=600)
@@ -116,7 +116,7 @@ IFrame(str("tmp/sycamore/data/1706.03762.pdf"), width=700, height=600)
 IFrame(str("tmp/sycamore/data/2306.07303.pdf"), width=700, height=600)
 ```
 
-d. We will now set some variables:
+d. Next, we will set some variables:
 
 ```python
 paths = "tmp/sycamore/data/"
@@ -134,9 +134,9 @@ pdf_docset = context.read.binary(paths, binary_format="pdf", metadata_provider=J
 pdf_docset.show(show_binary = False)
 ```
 
-The output of this cell will show informatoin about the DocSet, and show that there are two doucments included in it.
+The output of this cell will show information about the DocSet, and show that there are two doucments included in it.
 
-f. This will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove this part.
+f. This cell will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove the visual part.
 
 ```python
 def filter_func(doc: Document) -> bool:
@@ -170,7 +170,7 @@ pdf_docset.show(show_binary = False)
 
 The output should show the exploded DocSet.
 
-i. We will create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could a different embedding model depending on your use case.
+i. We will now create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could choose a different embedding model depending on your use case.
 
 
 ```python
@@ -241,9 +241,9 @@ The results of the hybrid search are in the right hand panel, and you can click 
 
 ## Add metadata exctraction using GenAI
 
-1. Going back to our notebook, let's add a cell after the cell we added in step 3f above. Then, restart the Sycamore processing job by rerunning the cells prior to this one.
+1. Going back to our notebook, let's add a cell after the cell we created in step 3f above. Then, restart the Sycamore processing job by rerunning the cells prior to this one.
 
-2. In this cell, we will add three prompt templates for extracting titles and authors. These prompts train a generative AI model to identify a title (or author) by giving examples, and then we will use the trained model to identify and extract them for each document.
+2. In this cell, we will add prompt templates for extracting titles and authors. These prompts train a generative AI model to identify a title (or author) by giving examples, and then we will use the trained model to identify and extract them for each document.
 
 ```python
  title_context_template = """
@@ -294,7 +294,7 @@ author_context_template = """
   """
 ```
 
-3. Add another cell. In this cell, we will use Sycamore's entity extractor with the previous prompt templates. We are selecting OpenAI as the generative AI model to use for this extraction.
+3. Add another cell. In this cell, we will use Sycamore's entity extractor with the prompt templates. We are selecting OpenAI as the generative AI model to use for this extraction.
 
 ```python
 pdf_docset = (partitioned_docset
@@ -308,11 +308,11 @@ pdf_docset.show(show_binary = False, show_elements=False)
 
 The output should show the title and author added to the elements in the DocSet.
 
-4. Change the index name from step 3j, so you can create and load a new index with your reprocessed data. Run the rest of the cells in the notebook, and load the data into OpenSearch.
+4. Change the index name you added in step 3j, so you can create and load a new index with your reprocessed data. Run the rest of the cells in the notebook, and load the data into OpenSearch.
 
 5. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
-- Using your internet browser, visit http://localhost:3000 . Make sure the demo UI container is still running from the Quickstart.
+- Using your internet browser, visit http://localhost:3000 . Make sure the demo UI container is still running from the Quickstart
 - Make sure the index selected in the dropdown has the same name you provided in the previous step
-- The titles should appear with the hybrid search results on the right panel
+- The titles should appear with the hybrid search results in the right panel
 
 Congrats! You've developed and iterated on a Sycamore data preparation script locally, and used generative AI to extract metatdata and enrich your dataset. To productionize this use case, you could automate this processing job using the Sycamore container deployed in the Quickstart configuration.
