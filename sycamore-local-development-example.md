@@ -126,7 +126,7 @@ font_path = "Arial.ttf"
 openai_llm = OpenAI(OpenAIModels.GPT_3_5_TURBO.value)
 ```
 
-e. Now we initialize Sycamore, and create a [DocSet](https://sycamore.readthedocs.io/en/stable/key_concepts/concepts.html):
+e. Now, we initialize Sycamore, and create a [DocSet](https://sycamore.readthedocs.io/en/stable/key_concepts/concepts.html):
 
 ```python
 context = sycamore.init()
@@ -136,3 +136,94 @@ pdf_docset.show(show_binary = False)
 ```
 
 The output of this cell will show informatoin about the DocSet, and show that there are two doucments included in it.
+
+f. This will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove this part.
+
+```python
+def filter_func(doc: Document) -> bool:
+    return doc.properties["page_number"] == 1
+
+partitioned_docset = pdf_docset.partition(partitioner=UnstructuredPdfPartitioner())
+docset = (partitioned_docset
+              .partition(partitioner=UnstructuredPdfPartitioner())
+
+#this part is for the visualization
+              .flat_map(split_and_convert_to_image)
+              .map_batch(DrawBoxes, f_constructor_args=[font_path])
+              .filter(filter_func))
+
+for doc in docset.take(2):
+    display(Image(doc.binary_representation, height=500, width=500))
+```
+
+g. Next, we will merge the intital chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
+
+```python
+pdf_docset = pdf_docset.merge(GreedyTextElementMerger(tokenizer=HuggingFaceTokenizer("sentence-transformers/all-MiniLM-L6-v2"), max_tokens=512))
+```
+
+h. Now, we will explode the DocSet and prepare it for creating vector embeddings and loading into OpenSearch. The explode transform converts the elements of each document into top-level documents.
+
+```python
+pdf_docset = pdf_docset.explode()
+pdf_docset.show(show_binary = False)
+```
+
+The output should show the exploded DocSet.
+
+i. We will create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could a different embedding model depending on your use case.
+
+
+```python
+pdf_docset = (pdf_docset
+              .embed(embedder=SentenceTransformerEmbedder(batch_size=100, model_name="sentence-transformers/all-MiniLM-L6-v2")))
+pdf_docset.show(show_binary = False)
+```
+
+The output should show the DocSet with vector embeddings.
+
+j. Before loading the OpenSearch component of Aryn Search, we need to configure the Sycamore job to: 1/communicate with the Aryn OpenSearch container and 2/have the proper configuration for the vector and keyword indexes for hybrid search. Sycamore will then create and load those indexes in the final step.
+
+The rest endpoint for the Aryn OpenSearch container from the Quickstart is at localhost:9200.  Make sure to provide the name for the index you will create. OpenSearch is a enterprise-grade, cusotmizeable search engine and vector database, and you can adjust these settings depending on your use case.
+
+
+```python
+os_client_args = {
+        "hosts": [{"host": "localhost", "port": 9200}],
+        "http_compress": True,
+        "http_auth": ("admin", "admin"),
+        "use_ssl": False,
+        "verify_certs": False,
+        "ssl_assert_hostname": False,
+        "ssl_show_warn": False,
+        "timeout": 120,
+    }
+
+index = "YOUR-INDEX-NAME"
+
+index_settings =  {
+        "body": {
+            "settings": {"index.knn": True, "number_of_shards": 5, "number_of_replicas": 1},
+            "mappings": {
+                "properties": {
+                    "text": {"type": "text"},
+                    "embedding": {
+                        "dimension": 384,
+                        "method": {"engine": "nmslib", "space_type": "l2", "name": "hnsw", "parameters": {}},
+                        "type": "knn_vector",
+                    },
+                    "title": {"type": "text"},
+                    "searchable_text": {"type": "text"},
+                    "title_embedding": {
+                        "dimension": 384,
+                        "method": {"engine": "nmslib", "space_type": "l2", "name": "hnsw", "parameters": {}},
+                        "type": "knn_vector",
+                    },
+                    "url": {"type": "text"},
+                }
+            },
+        }
+    }
+```
+
+
