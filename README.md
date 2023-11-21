@@ -80,7 +80,7 @@ No changes at [datetime] sleeping
 - Select your conversation, and then write a question into the text box in the middle panel. Hit enter.
 - Ask follow up questions. You'll see the actual results from the Aryn Search hybrid search for your question in the right panel, and the conversational search in the middle panel.  
 
-Congrats! You've deployed Aryn Search and enabled conversational search over a document. Next, you can choose to ingest the rest of the documents from the [Sort Benchmark website](##add-sort-benchmark-dataset) to search over more data. 
+Congrats! You've deployed Aryn Search and enabled conversational search over a document. Next, you can choose to ingest the rest of the documents from the [Sort Benchmark website](##add-the-full-sort-benchmark-dataset) to search over more data. 
 
 ## Add the full Sort Benchmark Dataset
 
@@ -105,13 +105,12 @@ You can interact with the demo UI while data is being added to the index, but th
 
 ## Add a dataset from an arbitrary website
 
-You can try using an arbitrary website with the sort benchmark importing script. It may or may not
-work well for this use case, but an early experiment (importing the aryn.ai website and asking who
-the founders were) worked well.
+You can try using an arbitrary website with the Sort Benchmark importing script. This script is not optimized for new datasets, so the answer quality may vary on new websites. However we have found
+positive results with some experiments.
 
-WARNING: Processing data using the sort benchmark importing script will upload your data to OpenAI,
-and will optionally upload it to textract. Consider whether this is acceptable if you are using a
-non-public website for testing.
+WARNING: Processing data using the Sort Benchmark importing script will send your data to OpenAI,
+and optionally Amazon Textract for calls to their AI services. Consider whether this is acceptable
+if you are using a non-public website for testing.
 
 1. Run the Sycamore HTTP Crawler container with an additional parameter:
 ```
@@ -120,9 +119,10 @@ docker compose run sycamore_crawler_http _url_
 docker compose run sycamore_crawler_http http://www.aryn.ai
 ```
 
-This will crawl and download the data from the specified website.
+This will crawl and download the data from the specified website.  If you import aryn.ai, you can
+try "who are the Aryn founders?"
 
-2. Sycamore will automatically start processing the new data. The processing job is complete and the data is loaded into the index once you see log messages similar to:
+2. Sycamore will automatically start processing the new data into the existing index. The processing job is complete and the data is loaded into the index once you see log messages similar to:
 
 ```
 No changes at [datetime] sleeping
