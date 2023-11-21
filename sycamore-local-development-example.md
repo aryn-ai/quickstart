@@ -4,7 +4,7 @@ The Quickstart configuration for Aryn Search easily launches containers for the 
 
 In this example, we will:
 
-- [Install and run components](##Install-and-run-components)
+- [Install and run components](#Install-and-run-components)
 - Write a Sycamore job
 - Iterate on the job by adding metadata extraction using GenAI
 - Run conversational search using the demo UI
