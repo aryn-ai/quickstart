@@ -7,7 +7,6 @@ In this example, we will:
 - [Install and run components](#Install-and-run-components)
 - [Write an initial Sycamore job](#Write-an-initial-Sycamore-job)
 - [Add metadata exctraction using GenAI](#Add-metadata-exctraction-using-GenAI)
-- Run conversational search using the demo UI
 
 ## Install and run components
 
