@@ -5,8 +5,8 @@ The Quickstart configuration for Aryn Search easily launches containers for the 
 In this example, we will:
 
 - [Install and run components](#Install-and-run-components)
-- Write a Sycamore job
-- Iterate on the job by adding metadata extraction using GenAI
+- [Write an initial Sycamore job](#Write-an-initial-Sycamore-job)
+- [Add metadata exctraction using GenAI](#Add-metadata-exctraction-using-GenAI)
 - Run conversational search using the demo UI
 
 ## Install and run components
@@ -238,7 +238,82 @@ pdf_docset.write.opensearch(os_client_args=os_client_args, index_name=index, ind
 - Create a new conversation. Enter the name for your conversation in the text box in the left "Conversations" panel, and hit enter or click the "add convo" icon on the right of the text box.
 - As a sample question, you can ask "Who wrote Attention Is All You Need?"
 
-The results of the hybrid search are in the right hand panel, and you can click through to find the highlighted passage (step 3b enabled this). Though we are getting good results back from hybrid search, it would be nice if we could have the titles for each passage. In the next section, we will iterate on our Sycamore job, and use generative AI to extract some metadata.
+The results of the hybrid search are in the right hand panel, and you can click through to find the highlighted passage (step 3b enabled this). Though we are getting good results back from hybrid search, it would be nice if we could have the titles and other information for each passage. In the next section, we will iterate on our Sycamore job, and use generative AI to extract some metadata.
 
-## Install and run components
+## Add metadata exctraction using GenAI
 
+1. Going back to our notebook, let's add a cell after the cell we added in step 3f above. Then, restart the Sycamore processing job by rerunning the cells prior to this one.
+
+2. In this cell, we will add three prompt templates for extracting titles and authors. These prompts train a generative AI model to identify a title (or author) by giving examples, and then we will use the trained model to identify and extract them for each document.
+
+```python
+ title_context_template = """
+    ELEMENT 1: Jupiter's Moons
+    ELEMENT 2: Ganymede 2020
+    ELEMENT 3: by Audi Lauper and Serena K. Goldberg. 2011
+    ELEMENT 4: From Wikipedia, the free encyclopedia
+    ELEMENT 5: Ganymede, or Jupiter III, is the largest and most massive natural satellite of Jupiter as well as in the Solar System, being a planetary-mass moon. It is the largest Solar System object without an atmosphere, despite being the only moon of the Solar System with a magnetic field. Like Titan, it is larger than the planet Mercury, but has somewhat less surface gravity than Mercury, Io or the Moon.
+    =========
+    "Ganymede 2020"
+
+    ELEMENT 1: FLAVR: Flow-Agnostic Video Representations for Fast Frame Interpolation
+    ELEMENT 2: Tarun Kalluri * UCSD
+    ELEMENT 3: Deepak Pathak CMU
+    ELEMENT 4: Manmohan Chandraker UCSD
+    ELEMENT 5: Du Tran Facebook AI
+    ELEMENT 6: https://tarun005.github.io/FLAVR/
+    ELEMENT 7: 2 2 0 2
+    ELEMENT 8: b e F 4 2
+    ELEMENT 9: ]
+    ELEMENT 10: V C . s c [
+    ========
+    "FLAVR: Flow-Agnostic Video Representations for Fast Frame Interpolation"
+    
+    """
+author_context_template = """
+    ELEMENT 1: Jupiter's Moons
+    ELEMENT 2: Ganymede 2020
+    ELEMENT 3: by Audi Lauper and Serena K. Goldberg. 2011
+    ELEMENT 4: From Wikipedia, the free encyclopedia
+    ELEMENT 5: Ganymede, or Jupiter III, is the largest and most massive natural satellite of Jupiter as well as in the Solar System, being a planetary-mass moon. It is the largest Solar System object without an atmosphere, despite being the only moon of the Solar System with a magnetic field. Like Titan, it is larger than the planet Mercury, but has somewhat less surface gravity than Mercury, Io or the Moon.
+    =========
+    Audi Laupe, Serena K. Goldberg
+
+    ELEMENT 1: FLAVR: Flow-Agnostic Video Representations for Fast Frame Interpolation
+    ELEMENT 2: Tarun Kalluri * UCSD
+    ELEMENT 3: Deepak Pathak CMU
+    ELEMENT 4: Manmohan Chandraker UCSD
+    ELEMENT 5: Du Tran Facebook AI
+    ELEMENT 6: https://tarun005.github.io/FLAVR/
+    ELEMENT 7: 2 2 0 2
+    ELEMENT 8: b e F 4 2
+    ELEMENT 9: ]
+    ELEMENT 10: V C . s c [
+    ========
+    Tarun Kalluri, Deepak Pathak, Manmohan Chandraker, Du Tran
+
+  """
+```
+
+3. Add another cell. In this cell, we will use Sycamore's entity extractor with the previous prompt templates. We are selecting OpenAI as the generative AI model to use for this extraction.
+
+```python
+pdf_docset = (partitioned_docset
+              .extract_entity(entity_extractor=OpenAIEntityExtractor("title", llm=openai_llm, prompt_template=title_context_template))
+              .extract_entity(entity_extractor=OpenAIEntityExtractor("authors", llm=openai_llm, prompt_template=author_context_template)))
+
+pdf_docset = pdf_docset.spread_properties(["title", "authors"])
+
+pdf_docset.show(show_binary = False, show_elements=False)
+```
+
+The output should show the title and author added to the elements in the DocSet.
+
+4. Change the index name from step 3j, so you can create and load a new index with your reprocessed data. Run the rest of the cells in the notebook, and load the data into OpenSearch.
+
+5. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
+- Using your internet browser, visit http://localhost:3000 . Make sure the demo UI container is still running from the Quickstart.
+- Make sure the index selected in the dropdown has the same name you provided in the previous step
+- The titles should appear with the hybrid search results on the right panel
+
+Congrats! You've developed and iterated on a Sycamore data preparation script locally, and used generative AI to extract metatdata and enrich your dataset. To productionize this use case, you could automate this processing job using the Sycamore container deployed in the Quickstart configuration.
