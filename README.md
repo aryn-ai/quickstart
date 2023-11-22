@@ -66,8 +66,9 @@ In the directory where you downloaded the Docker compose files, run:
 docker compose up --pull=always
 ```
 
-NOTE: You can altenately run `docker compose pull` to control when new images are
-downloaded. --pull=always guarantees you have the most recent images for the specified version.
+NOTE: You can alternately remove the `--pull=always` and instead run `docker compose pull` to
+control when new images are downloaded. `--pull=always` guarantees you have the most recent images
+for the specified version.
 
 Aryn Search will start up and run the demo Sycamore script, process the data, and load the index. You will know when these steps are completed when you see log messages similar to:
 
