@@ -18,7 +18,7 @@ version: '3'
 
 services:
   demo-ui:
-    image: arynai/demo-ui
+    image: arynai/demo-ui:${UI_VERSION}
     ports:
       - 127.0.0.1:3000:3000 # UI port
       - 127.0.0.1:3001:3001 # proxy port
@@ -27,16 +27,18 @@ services:
       - OPENSEARCH_HOST=opensearch
     volumes:
       - crawl_data:/app/.scrapy
+
   opensearch:
-    image: arynai/opensearch
+    image: arynai/opensearch:${OPENSEARCH_VERSION}
     ports:
       - 127.0.0.1:9200:9200 # opensearch port, directly accessed by UI
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     environment:
       - OPENAI_API_KEY
+
   sycamore:
-    image: arynai/sycamore
+    image: arynai/sycamore:${SYCAMORE_VERSION}
     ports:
       - 127.0.0.1:8265:8265 # ray console port
     volumes:
@@ -59,10 +61,37 @@ services:
       - AWS_SECRET_ACCESS_KEY
       - AWS_SESSION_TOKEN
       - AWS_CREDENTIAL_EXPIRATION
-  sycamore_crawler_http:
-    image: arynai/sycamore-crawler-http
+
+  sycamore_crawler_http_sort_one:
+    image: arynai/sycamore-crawler-http:${SYCAMORE_CRAWLER_HTTP_VERSION}
     volumes:
       - crawl_data:/app/.scrapy
+
+
+### Optional profiles below here
+
+  sycamore_crawler_http_sort_all:
+    profiles: ['sort-all']
+    image: arynai/sycamore-crawler-http:${SYCAMORE_CRAWLER_HTTP_VERSION}
+    volumes:
+      - crawl_data:/app/.scrapy
+    command: -a preset=sort
+
+  sycamore_crawler_http:
+    profiles: ['crawl-http']
+    image: arynai/sycamore-crawler-http:${SYCAMORE_CRAWLER_HTTP_VERSION}
+    volumes:
+      - crawl_data:/app/.scrapy
+    command: help
+
+  reset:
+    profiles: ['reset']
+    image: ubuntu
+    volumes:
+      - opensearch_data:/tmp/opensearch_data
+      - crawl_data:/tmp/crawl_data
+    command: /bin/sh -c 'echo size-before && du -s /tmp/* && rm -rf /tmp/opensearch_data/* /tmp/crawl_data/* && echo size-after && du -s /tmp/*'
+    
 
 volumes:
   opensearch_data:
