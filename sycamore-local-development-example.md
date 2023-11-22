@@ -8,6 +8,8 @@ In this example, we will:
 - [Write an initial Sycamore job](#Write-an-initial-Sycamore-job)
 - [Add metadata exctraction using GenAI](#Add-metadata-exctraction-using-GenAI)
 
+The full notebook that includes the final code of the Sycamore job is [here](https://github.com/aryn-ai/quickstart/blob/main/sycamore_local_dev_example.ipynb).
+
 ## Install and run components
 
 1. Launch Aryn Search using the containerized Quickstart following [these instructions](https://github.com/aryn-ai/quickstart#readme). However, a few notes on this step specific to this example:
