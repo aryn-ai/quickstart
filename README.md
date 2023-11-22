@@ -16,10 +16,10 @@ Finally, [see below](#add-your-own-data) for instructions on how to crawl and lo
 
 1. An OpenAI Key for LLM access. You can create an OpenAI account [here](https://platform.openai.com/signup), or if you already have one, you can retrieve your key [here](https://platform.openai.com/account/api-keys).
 
-2. For the highest quality table extraction (and better answers), the demo Sycamore script needs AWS credentials for Amazon Textract and an Amazon S3 bucket for Textract input/output. You can optionally disable Textract. You will accrue AWS charges for Textract usage. If you want to enable Textract:
+2. For the highest quality table extraction (and better answers), the demo Sycamore script needs AWS credentials for Amazon Textract and an Amazon S3 bucket for Textract input/output. This script uses Textract and Amazon S3 in the US-East-1 region. You can optionally disable Textract. You will accrue AWS charges for Textract usage. If you want to enable Textract:
 
 - If you do not have an AWS account, sign up [here](https://portal.aws.amazon.com/billing/signup). You will need this during configuration.
-- Create an Amazon S3 bucket in your AWS account for use with Textract (e.g. s3://username-textract-bucket). We recommend you set up bucket lifecycle rules that automatically delete files in this bucket, as the data stored here is only needed temporarily during a Sycamore data processing job.  
+- Create an Amazon S3 bucket in your AWS account in the US-East-1 region for use with Textract (e.g. s3://username-textract-bucket). We recommend you set up bucket lifecycle rules that automatically delete files in this bucket, as the data stored here is only needed temporarily during a Sycamore data processing job.  
 
 ### Now, let's get started  
 
@@ -97,9 +97,9 @@ Congrats! You've deployed Aryn Search and enabled conversational search over a d
 
 ## Add the full Sort Benchmark Dataset
 
-By default, the Quickstart crawls the [Sort Benchmark website](http://www.sortbenchmark.org) and downloads and ingests [this PDF](http://sortbenchmark.org/2004_Nsort_Minutesort.pdf). However, you may want to ingest the whole Sort Benchmark website dataset to search over more documents. This dataset includes many PDFs and the acutal HTML pages themselves, and has a variety of tables (some very poorly formatted!) and figures. After loading this data, you can experiment with how Aryn Search can answer questions on this unstructured dataset.
+By default, the Quickstart downloads and ingests [this PDF](http://sortbenchmark.org/2004_Nsort_Minutesort.pdf) from the [Sort Benchmark website](http://www.sortbenchmark.org). However, you may want to ingest the whole Sort Benchmark website dataset to search over more documents. This dataset includes many PDFs and the acutal HTML pages themselves, and has a variety of tables (some very poorly formatted!) and figures. After loading this data, you can experiment with how Aryn Search can answer questions on this unstructured dataset.
 
-Keep the Aryn Stack running from the previous example. You will now add the rest of the documents from the Sort Benchmark website.
+Keep the Aryn Stack running from the previous example. You will now crawl the the Sort Benchmark website and add the rest of the data:
 
 1. Run the Sycamore HTTP Crawler container with an additional parameter:
 ```
@@ -113,7 +113,11 @@ This will crawl and download the data from the Sort Benchmark website.
 No changes at [datetime] sleeping
 ```
 
-You can interact with the demo UI while data is being added to the index, but the data won't all be available until the job is done.
+You can interact with the demo UI while data is being added to the index, but the data won't all be available until the job is done. Once this is complete, some sample questions to ask are:
+
+- Who are the most recent winners of the Sort Benchmark?
+- What are the hardware costs for ELSAR? Return as a table.
+- What is CloudSort?
 
 
 ## Add a dataset from an arbitrary website
