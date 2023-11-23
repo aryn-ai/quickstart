@@ -20,7 +20,13 @@ The full notebook that includes the final code of the Sycamore job is [here](htt
 2. Install [Sycamore](https://github.com/aryn-ai/sycamore) locally.
 
 ```
-pip install sycamore
+pip install sycamore-ai
+```
+
+ERIC: needed all of the following before that (and needed sycamore-ai)
+```
+python3 -m venv .
+. bin/activate
 ```
 
 For certain PDF processing operations, you also need to install poppler, which you can do with the OS-native package manager of your choice. For example, the command for Homebrew on Mac OS is:
@@ -29,11 +35,15 @@ For certain PDF processing operations, you also need to install poppler, which y
 brew install poppler
 ```
 
+ERIC: Probably `sudo apt install poppler-utils` here (I already had it installed)
+
 3. [Optional] [Pillow](https://pillow.readthedocs.io/en/stable/) is used in our example to visually show the document segmentation in the notebook, though you can omit it. To install Pillow:
 
 ```
 pip install pillow
 ```
+
+ERIC: This step was mandatory when I tried to install sycamore-ai
 
 4. Install [Jupyter Notebook](https://jupyter.org/). If you already have a python notebook enviornment, you can choose to use that instead.
 
@@ -51,25 +61,42 @@ wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/1706.03762.pdf"
 wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/2306.07303.pdf"
 ```
 
+ERIC: wget gave me 403 Forbidden; the following worked. Note the path being used here is $PWD/tmp
+and the path above is /tmp, but if I didn't make the path change also then when I ran the notebook
+it didn't work.
+
+```
+(
+    mkdir -p tmp/sycamore/data
+    cd tmp/sycamore/data
+    curl -O https://arxiv.org/pdf/1706.03762.pdf
+    curl -O https://arxiv.org/pdf/2306.07303.pdf
+)
+```
+
 2. Launch Juypter Notebook
 
+If you haven't set your OpenAI Key, do so before starting your notebook:
+```
+export OPENAI_API_KEY=YOUR-KEY
+```
+
+Then run:
 ```
 juypter notebook
 ```
 
-And create a new notebook for our Sycamore job. If you haven't set your OpenAI Key, do so before starting your notebook:
-
-```
-export OPENAI_API_KEY=YOUR-KEY
-```
+In the browser window that appears, navigate to File -> New -> Notebook; and then choose the
+preferred kernel.
 
 3. Write initial Sycamore Job.
 
 a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamore:
 
 ```python
+import json
 import sys
-print(sys.version)
+print(sys.version) # ERIC: is this needed?
 
 
 from IPython.display import display, Image
@@ -94,7 +121,11 @@ from sycamore.scans.file_scan import JsonManifestMetadataProvider
 
 b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publicly accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
 
+NOTE: You can make addditional cells with the rectangle over a + button on the right side of each
+cell.
+
 ```python
+
 metadata = {
   "tmp/sycamore/data/1706.03762.pdf" : {
     "_location": "https://arxiv.org/pdf/1706.03762.pdf"
@@ -122,7 +153,7 @@ d. Next, we will set some variables:
 
 ```python
 paths = "tmp/sycamore/data/"
-font_path = "Arial.ttf"
+font_path = "Arial.ttf" # ERIC: This seems unlikely to be correct; neither of those docs look like Arial
 
 openai_llm = OpenAI(OpenAIModels.GPT_3_5_TURBO.value)
 ```
@@ -135,6 +166,11 @@ pdf_docset = context.read.binary(paths, binary_format="pdf", metadata_provider=J
 
 pdf_docset.show(show_binary = False)
 ```
+
+# ERIC: Got a failure here about missing the package async_timeout. Needed
+# Needed `pip install async_timeout` to continue
+# Unclear if this should be in the sycamore dependencies, but for now it will probably have to go
+# above.
 
 The output of this cell will show information about the DocSet, and show that there are two doucments included in it.
 
@@ -156,6 +192,8 @@ docset = (partitioned_docset
 for doc in docset.take(2):
     display(Image(doc.binary_representation, height=500, width=500))
 ```
+
+# ERIC: This step fails; I don't have the Arial font.
 
 g. Next, we will merge the intital chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
 
