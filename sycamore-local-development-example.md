@@ -57,19 +57,12 @@ pip install notebook
 ```
 (
     mkdir -p tmp/sycamore/data
-    cd tmp/sycamore/data
-    curl -O https://arxiv.org/pdf/1706.03762.pdf
-    curl -O https://arxiv.org/pdf/2306.07303.pdf
+    curl -O https://arxiv.org/pdf/1706.03762.pdf --output-dir tmp/sycamore/data
+    curl -O https://arxiv.org/pdf/2306.07303.pdf --output-dir tmp/sycamore/data
 )
 ```
 
 2. Launch Juypter Notebook
-
-Return to the root of the working directory:
-
-```
-cd ~/.sycamore
-```
 
 If you haven't set your OpenAI Key, do so before starting your notebook:
 ```
