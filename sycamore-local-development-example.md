@@ -154,10 +154,11 @@ pdf_docset = context.read.binary(paths, binary_format="pdf", metadata_provider=J
 pdf_docset.show(show_binary = False)
 ```
 
-# ERIC: Got a failure here about missing the package async_timeout. Needed
-# Needed `pip install async_timeout` to continue
-# Unclear if this should be in the sycamore dependencies, but for now it will probably have to go
-# above.
+If you are using Linux, you may need to install this package:
+
+```
+pip install async_timeout
+```
 
 The output of this cell will show information about the DocSet, and show that there are two doucments included in it.
 
