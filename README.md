@@ -25,7 +25,11 @@ Finally, [see below](#add-your-own-data) for instructions on how to crawl and lo
 
 1. Download the Docker compose files from the Quickstart repo. You will need the [compose](https://github.com/aryn-ai/quickstart/blob/main/compose.yaml) and [.env](https://github.com/aryn-ai/quickstart/blob/main/.env) files.
 
-2. Set up your Aryn Search environment:
+```
+git clone git@github.com:aryn-ai/quickstart.git
+```
+
+3. Set up your Aryn Search environment:
 
 ```
 export SYCAMORE_TEXTRACT_PREFIX=s3://your-bucket-name-here
