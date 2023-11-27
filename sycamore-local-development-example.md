@@ -19,33 +19,31 @@ The full notebook that includes the final code of the Sycamore job is [here](htt
 
 2. Install [Sycamore](https://github.com/aryn-ai/sycamore) locally.
 
-```
-pip install sycamore-ai
-```
 
-ERIC: needed all of the following before that (and needed sycamore-ai)
 ```
 python3 -m venv .
 . bin/activate
 ```
 
+
+```
+pip install sycamore-ai
+```
+
 For certain PDF processing operations, you also need to install poppler, which you can do with the OS-native package manager of your choice. For example, the command for Homebrew on Mac OS is:
+
+For MacOS:
 
 ```
 brew install poppler
 ```
 
-ERIC: Probably `sudo apt install poppler-utils` here (I already had it installed)
-
-3. [Optional] [Pillow](https://pillow.readthedocs.io/en/stable/) is used in our example to visually show the document segmentation in the notebook, though you can omit it. To install Pillow:
-
+For Linux:
 ```
-pip install pillow
+sudo apt install poppler-utils
 ```
 
-ERIC: This step was mandatory when I tried to install sycamore-ai
-
-4. Install [Jupyter Notebook](https://jupyter.org/). If you already have a python notebook enviornment, you can choose to use that instead.
+3. Install [Jupyter Notebook](https://jupyter.org/). If you already have a python notebook enviornment, you can choose to use that instead.
 
 ```
 pip install notebook
@@ -55,15 +53,6 @@ pip install notebook
 ## Write an initial Sycamore job
 
 1. Download the PDFs we want to use for our sample dataset. We will use two journal articles, "Attention Is All You Need" and "A Comprehensive Survey On Applications Of Transformers For Deep Learning Tasks." We will download these locally:
-
-```
-wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/1706.03762.pdf" 
-wget -P /tmp/sycamore/data/ "https://arxiv.org/pdf/2306.07303.pdf"
-```
-
-ERIC: wget gave me 403 Forbidden; the following worked. Note the path being used here is $PWD/tmp
-and the path above is /tmp, but if I didn't make the path change also then when I ran the notebook
-it didn't work.
 
 ```
 (
@@ -96,7 +85,6 @@ a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamo
 ```python
 import json
 import sys
-print(sys.version) # ERIC: is this needed?
 
 
 from IPython.display import display, Image
