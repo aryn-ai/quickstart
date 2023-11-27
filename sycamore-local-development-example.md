@@ -140,10 +140,11 @@ d. Next, we will set some variables:
 
 ```python
 paths = "tmp/sycamore/data/"
-font_path = "Arial.ttf" # ERIC: This seems unlikely to be correct; neither of those docs look like Arial
+font_path = "Arial.ttf"
 
 openai_llm = OpenAI(OpenAIModels.GPT_3_5_TURBO.value)
 ```
+If you are using Linux, you may not have the Arial font installed. If so, choose a different font.
 
 e. Now, we initialize Sycamore, and create a [DocSet](https://sycamore.readthedocs.io/en/stable/key_concepts/concepts.html):
 
@@ -180,8 +181,6 @@ docset = (partitioned_docset
 for doc in docset.take(2):
     display(Image(doc.binary_representation, height=500, width=500))
 ```
-
-# ERIC: This step fails; I don't have the Arial font.
 
 g. Next, we will merge the intital chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
 
