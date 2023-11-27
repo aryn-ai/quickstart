@@ -72,7 +72,7 @@ export OPENAI_API_KEY=YOUR-KEY
 
 Then run:
 ```
-juypter notebook
+jupyter notebook
 ```
 
 In the browser window that appears, navigate to File -> New -> Notebook; and then choose the
