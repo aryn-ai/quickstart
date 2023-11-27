@@ -109,8 +109,7 @@ from sycamore.scans.file_scan import JsonManifestMetadataProvider
 
 b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publicly accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
 
-NOTE: You can make addditional cells with the rectangle over a + button on the right side of each
-cell.
+You can make addditional cells with the rectangle over a + button on the right side of each cell.
 
 ```python
 
