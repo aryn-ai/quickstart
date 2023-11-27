@@ -2,7 +2,7 @@
 
 You can easily get started with the Aryn Search Platform locally using Docker. If you don't have Docker already installed, visit [here](https://docs.docker.com/get-docker/). 
 
-The Quickstart will deploy the Aryn platform, consisting of four containers: Sycamore importer, Sycamore HTTP crawler, Aryn OpenSearch, and Aryn demo conversational search UI. Our images currently support linux/amd64 and linux/arm64 hardware.
+The Quickstart will deploy the Aryn platform, consisting of four containers: Sycamore importer, Sycamore HTTP crawler, Aryn OpenSearch, and Aryn demo conversational search UI. Our images currently support amd64 and arm64 hardware.
 
 The Quickstart configuration of Aryn automatically runs an example workload that downloads [this PDF](http://sortbenchmark.org/2004_Nsort_Minutesort.pdf) from the [Sort Benchmark website](http://www.sortbenchmark.org), uses [Sycamore](https://github.com/aryn-ai/sycamore) to prepare the data, and loads it into the Aryn platform. This gives you a out-of-the-box example for conversational search. 
 
@@ -23,7 +23,7 @@ Finally, [see below](#add-your-own-data) for instructions on how to crawl and lo
 
 ### Now, let's get started  
 
-1. Download the Docker compose files for the Quickstart [here](https://github.com/aryn-ai/quickstart/tree/main/docker_compose)  
+1. Download the Docker compose files from the Quickstart repo. You will need the [compose](https://github.com/aryn-ai/quickstart/blob/main/compose.yaml) and [.env](https://github.com/aryn-ai/quickstart/blob/main/.env) files.
 
 2. Set up your Aryn Search environment:
 
