@@ -135,9 +135,9 @@ metadata = {
   }
 }
 
-with open("/tmp/sycamore/manifest.json", "w") as f:
+with open("tmp/sycamore/manifest.json", "w") as f:
     json.dump(metadata, f)
-manifest_path = "/tmp/sycamore/manifest.json"
+manifest_path = "tmp/sycamore/manifest.json"
 ```
 
 3c. The next two cells will show a quick view of the PDF documents we will ingest, if we want to inspect them or take a closer look:
