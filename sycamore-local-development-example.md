@@ -84,6 +84,7 @@ a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamo
 
 ```python
 import json
+import os
 import sys
 
 
@@ -121,9 +122,9 @@ metadata = {
   }
 }
 
-with open("/tmp/sycamore/manifest.json", "w") as f:
+with open("tmp/sycamore/manifest.json", "w") as f:
     json.dump(metadata, f)
-manifest_path = "/tmp/sycamore/manifest.json"
+manifest_path = "tmp/sycamore/manifest.json"
 ```
 
 c. The next two cells will show a quick view of the PDF documents we will ingest, if we want to inspect them or take a closer look:
@@ -140,7 +141,6 @@ d. Next, we will set some variables:
 
 ```python
 paths = "tmp/sycamore/data/"
-font_path = "Arial.ttf"
 
 openai_llm = OpenAI(OpenAIModels.GPT_3_5_TURBO.value)
 ```
@@ -166,6 +166,13 @@ The output of this cell will show information about the DocSet, and show that th
 f. This cell will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove the visual part.
 
 ```python
+# Note: these fonts aren't correct, but are close enough for the visualization
+if os.path.isfile("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"):
+    font_path = "LiberationSans-Regular"
+else:
+    print("Using default Arial font, which should work on MacOS and Windows")
+    font_path = "Arial.ttf"
+
 def filter_func(doc: Document) -> bool:
     return doc.properties["page_number"] == 1
 
@@ -210,7 +217,7 @@ The output should show the DocSet with vector embeddings.
 
 j. Before loading the OpenSearch component of Aryn Search, we need to configure the Sycamore job to: 1/communicate with the Aryn OpenSearch container and 2/have the proper configuration for the vector and keyword indexes for hybrid search. Sycamore will then create and load those indexes in the final step.
 
-The rest endpoint for the Aryn OpenSearch container from the Quickstart is at localhost:9200.  Make sure to provide the name for the index you will create. OpenSearch is a enterprise-grade, cusotmizeable search engine and vector database, and you can adjust these settings depending on your use case.
+The rest endpoint for the Aryn OpenSearch container from the Quickstart is at localhost:9200.  Make sure to provide the name for the index you will create. OpenSearch is a enterprise-grade, customizeable search engine and vector database, and you can adjust these settings depending on your use case.
 
 
 ```python
