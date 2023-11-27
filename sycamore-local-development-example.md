@@ -57,9 +57,8 @@ pip install notebook
 ```
 (
     mkdir -p tmp/sycamore/data
-    cd tmp/sycamore/data
-    curl -O https://arxiv.org/pdf/1706.03762.pdf
-    curl -O https://arxiv.org/pdf/2306.07303.pdf
+    curl -O https://arxiv.org/pdf/1706.03762.pdf --output-dir tmp/sycamore/data
+    curl -O https://arxiv.org/pdf/2306.07303.pdf --output-dir tmp/sycamore/data
 )
 ```
 
@@ -70,7 +69,15 @@ If you haven't set your OpenAI Key, do so before starting your notebook:
 export OPENAI_API_KEY=YOUR-KEY
 ```
 
-Then run:
+Before you start up the notebook, make sure OpenSearch is running.  
+
+```
+curl localhost:9200
+```
+
+If it's not, then start up the container using the [Quickstart instructions](https://github.com/aryn-ai/quickstart).
+
+If the OpenSearch is running (and you get a response), then run:
 ```
 jupyter notebook
 ```
@@ -80,7 +87,7 @@ preferred kernel.
 
 3. Write initial Sycamore Job.
 
-a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamore:
+3a. First, we will import our dependencies from IPython, JSON, Pillow, and Sycamore:
 
 ```python
 import json
@@ -108,7 +115,7 @@ from sycamore.functions.tokenizer import HuggingFaceTokenizer
 from sycamore.scans.file_scan import JsonManifestMetadataProvider
 ```
 
-b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publicly accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
+3b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publicly accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
 
 You can make addditional cells with the rectangle over a + button on the right side of each cell.
 
@@ -127,7 +134,7 @@ with open("tmp/sycamore/manifest.json", "w") as f:
 manifest_path = "tmp/sycamore/manifest.json"
 ```
 
-c. The next two cells will show a quick view of the PDF documents we will ingest, if we want to inspect them or take a closer look:
+3c. The next two cells will show a quick view of the PDF documents we will ingest, if we want to inspect them or take a closer look:
 
 ```
 IFrame(str("tmp/sycamore/data/1706.03762.pdf"), width=700, height=600)
@@ -137,7 +144,7 @@ IFrame(str("tmp/sycamore/data/1706.03762.pdf"), width=700, height=600)
 IFrame(str("tmp/sycamore/data/2306.07303.pdf"), width=700, height=600)
 ```
 
-d. Next, we will set some variables:
+3d. Next, we will set some variables:
 
 ```python
 paths = "tmp/sycamore/data/"
@@ -146,7 +153,7 @@ openai_llm = OpenAI(OpenAIModels.GPT_3_5_TURBO.value)
 ```
 If you are using Linux, you may not have the Arial font installed. If so, choose a different font.
 
-e. Now, we initialize Sycamore, and create a [DocSet](https://sycamore.readthedocs.io/en/stable/key_concepts/concepts.html):
+3e. Now, we initialize Sycamore, and create a [DocSet](https://sycamore.readthedocs.io/en/stable/key_concepts/concepts.html):
 
 ```python
 context = sycamore.init()
@@ -163,7 +170,7 @@ pip install async_timeout
 
 The output of this cell will show information about the DocSet, and show that there are two doucments included in it.
 
-f. This cell will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove the visual part.
+3f. This cell will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove the visual part.
 
 ```python
 # Note: these fonts aren't correct, but are close enough for the visualization
@@ -189,13 +196,13 @@ for doc in docset.take(2):
     display(Image(doc.binary_representation, height=500, width=500))
 ```
 
-g. Next, we will merge the intital chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
+3g. Next, we will merge the intital chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
 
 ```python
 pdf_docset = pdf_docset.merge(GreedyTextElementMerger(tokenizer=HuggingFaceTokenizer("sentence-transformers/all-MiniLM-L6-v2"), max_tokens=512))
 ```
 
-h. Now, we will explode the DocSet and prepare it for creating vector embeddings and loading into OpenSearch. The explode transform converts the elements of each document into top-level documents.
+3h. Now, we will explode the DocSet and prepare it for creating vector embeddings and loading into OpenSearch. The explode transform converts the elements of each document into top-level documents.
 
 ```python
 pdf_docset = pdf_docset.explode()
@@ -204,7 +211,7 @@ pdf_docset.show(show_binary = False)
 
 The output should show the exploded DocSet.
 
-i. We will now create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could choose a different embedding model depending on your use case.
+3i. We will now create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could choose a different embedding model depending on your use case.
 
 
 ```python
@@ -215,7 +222,7 @@ pdf_docset.show(show_binary = False)
 
 The output should show the DocSet with vector embeddings.
 
-j. Before loading the OpenSearch component of Aryn Search, we need to configure the Sycamore job to: 1/communicate with the Aryn OpenSearch container and 2/have the proper configuration for the vector and keyword indexes for hybrid search. Sycamore will then create and load those indexes in the final step.
+3j. Before loading the OpenSearch component of Aryn Search, we need to configure the Sycamore job to: 1/communicate with the Aryn OpenSearch container and 2/have the proper configuration for the vector and keyword indexes for hybrid search. Sycamore will then create and load those indexes in the final step.
 
 The rest endpoint for the Aryn OpenSearch container from the Quickstart is at localhost:9200.  Make sure to provide the name for the index you will create. OpenSearch is a enterprise-grade, customizeable search engine and vector database, and you can adjust these settings depending on your use case.
 
@@ -259,7 +266,7 @@ index_settings =  {
     }
 ```
 
-k. This is the final part of the Sycamore job. We will load the data and vector embeddings into the OpenSearch container using the configuration supplied above.
+3k. This is the final part of the Sycamore job. We will load the data and vector embeddings into the OpenSearch container using the configuration supplied above.
 
 ```python
 pdf_docset.write.opensearch(os_client_args=os_client_args, index_name=index, index_settings=index_settings)
