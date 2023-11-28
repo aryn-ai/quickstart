@@ -6,7 +6,7 @@ In this example, we will:
 
 - [Install and run components](#Install-and-run-components)
 - [Write an initial Sycamore job](#Write-an-initial-Sycamore-job)
-- [Add metadata exctraction using GenAI](#Add-metadata-exctraction-using-GenAI)
+- [Add metadata extraction using GenAI](#Add-metadata-extraction-using-GenAI)
 
 The full notebook that includes the final code of the Sycamore job is [here](https://github.com/aryn-ai/quickstart/blob/main/sycamore_local_dev_example.ipynb).
 
@@ -43,7 +43,7 @@ For Linux:
 sudo apt install poppler-utils
 ```
 
-3. Install [Jupyter Notebook](https://jupyter.org/). If you already have a python notebook enviornment, you can choose to use that instead.
+3. Install [Jupyter Notebook](https://jupyter.org/). If you already have a python notebook environment, you can choose to use that instead.
 
 ```
 pip install notebook
@@ -62,7 +62,7 @@ pip install notebook
 )
 ```
 
-2. Launch Juypter Notebook
+2. Launch Jupyter Notebook
 
 If you haven't set your OpenAI Key, do so before starting your notebook:
 ```
@@ -117,7 +117,7 @@ from sycamore.scans.file_scan import JsonManifestMetadataProvider
 
 3b. Next, we will include the creation of a metadata file that enables our demo UI to show and highlight the source documents when clicking on a search result. In this example, the demo UI will pull the document from a publicly accessible URL. However, you could choose to host the documents in Amazon S3 (common for enterprise data) or other locations accessible by the demo UI container.
 
-You can make addditional cells with the rectangle over a + button on the right side of each cell.
+You can make additional cells with the rectangle over a + button on the right side of each cell.
 
 ```python
 
@@ -168,7 +168,7 @@ If you are using Linux, you may need to install this package:
 pip install async_timeout
 ```
 
-The output of this cell will show information about the DocSet, and show that there are two doucments included in it.
+The output of this cell will show information about the DocSet, and show that there are two documents included in it.
 
 3f. This cell will segment the PDFs and visually show how a few pages are segmented. 
 
@@ -200,7 +200,7 @@ merged_docset = partitioned_docset.merge(GreedyTextElementMerger(tokenizer=Huggi
 merged_docset.show(show_binary = False)
 ```
 
-The output should show many a dict with an array of elements, and each element with content like `'type': 'Section', 'binary_representation': b'...'`.
+The output should show a dict with an array of elements, and each element with content like `'type': 'Section', 'binary_representation': b'...'`.
 
 3h. Now, we will explode the DocSet and prepare it for creating vector embeddings and loading into OpenSearch. The explode transform converts the elements of each document into top-level documents.
 
@@ -224,7 +224,7 @@ The output should show the DocSet with vector embeddings, e.g. `'embedding': '<3
 
 3j. Before loading the OpenSearch component of Aryn Search, we need to configure the Sycamore job to: 1/communicate with the Aryn OpenSearch container and 2/have the proper configuration for the vector and keyword indexes for hybrid search. Sycamore will then create and load those indexes in the final step.
 
-The rest endpoint for the Aryn OpenSearch container from the Quickstart is at localhost:9200.  Make sure to provide the name for the index you will create. OpenSearch is a enterprise-grade, customizeable search engine and vector database, and you can adjust these settings depending on your use case.
+The rest endpoint for the Aryn OpenSearch container from the Quickstart is at localhost:9200.  Make sure to provide the name for the index you will create. OpenSearch is a enterprise-grade, customizable search engine and vector database, and you can adjust these settings depending on your use case.
 
 
 ```python
@@ -370,4 +370,4 @@ merged_docset.show(show_binary = False)
 - Make sure the index selected in the dropdown has the same name you provided in the previous step
 - The titles should appear with the hybrid search results in the right panel. If they don't check that you both a) changed the index name, and b) used the new index in the UI.
 
-Congrats! You've developed and iterated on a Sycamore data preparation script locally, and used generative AI to extract metatdata and enrich your dataset. To productionize this use case, you could automate this processing job using the Sycamore container deployed in the Quickstart configuration.
+Congrats! You've developed and iterated on a Sycamore data preparation script locally, and used generative AI to extract metadata and enrich your dataset. To productionize this use case, you could automate this processing job using the Sycamore container deployed in the Quickstart configuration.
