@@ -370,4 +370,4 @@ merged_docset.show(show_binary = False)
 - Make sure the index selected in the dropdown has the same name you provided in the previous step
 - The titles should appear with the hybrid search results in the right panel. If they don't check that you both a) changed the index name, and b) used the new index in the UI.
 
-Congrats! You've developed and iterated on a Sycamore data preparation script locally, and used generative AI to extract metadata and enrich your dataset. To productionize this use case, you could automate this processing job using the Sycamore container deployed in the Quickstart configuration.
+Congrats! You've developed and iterated on a Sycamore data preparation script locally, and used generative AI to extract metadata and enrich your dataset. As your datatset changes, you could automate this processing job using the Sycamore container deployed in the Quickstart configuration.
