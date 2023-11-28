@@ -170,7 +170,7 @@ pip install async_timeout
 
 The output of this cell will show information about the DocSet, and show that there are two doucments included in it.
 
-3f. This cell will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove the visual part.
+3f. This cell will segment the PDFs and visually show how a few pages are segmented. 
 
 ```python
 # Note: these fonts aren't correct, but are close enough for the visualization
