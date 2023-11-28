@@ -30,9 +30,9 @@ python3 -m venv .
 pip install sycamore-ai
 ```
 
-For certain PDF processing operations, you also need to install poppler, which you can do with the OS-native package manager of your choice. For example, the command for Homebrew on Mac OS is:
+For certain PDF processing operations, you also need to install poppler, which you can do with the OS-native package manager of your choice. 
 
-For MacOS:
+For example, the command for Homebrew on Mac OS is:
 
 ```
 brew install poppler
@@ -170,7 +170,7 @@ pip install async_timeout
 
 The output of this cell will show information about the DocSet, and show that there are two doucments included in it.
 
-3f. This cell will segment the PDFs and visually show how a few pages are segmented. If you didn't install Pillow, then you will need to remove the visual part.
+3f. This cell will segment the PDFs and visually show how a few pages are segmented. 
 
 ```python
 # Note: these fonts aren't correct, but are close enough for the visualization
@@ -200,7 +200,7 @@ merged_docset = partitioned_docset.merge(GreedyTextElementMerger(tokenizer=Huggi
 merged_docset.show(show_binary = False)
 ```
 
-The output should show many a dict with an array of elements, each one with content like `'type': 'Section', 'binary_representation': b'...'`.
+The output should show many a dict with an array of elements, and each element with content like `'type': 'Section', 'binary_representation': b'...'`.
 
 3h. Now, we will explode the DocSet and prepare it for creating vector embeddings and loading into OpenSearch. The explode transform converts the elements of each document into top-level documents.
 
@@ -209,7 +209,7 @@ exploded_docset = merged_docset.explode()
 exploded_docset.show(show_binary = False)
 ```
 
-The output should show the exploded DocSet with no elements in the `'type': 'pdf'` entry and many elements with `'type': 'Section'`, and no elements.
+The output should show the exploded DocSet with an empty 'elements' list in the `‘type’: ‘pdf’` entry, many entries with `‘type’: ‘Section’`, and no 'elements' sub-entry.
 
 3i. We will now create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could choose a different embedding model depending on your use case.
 
