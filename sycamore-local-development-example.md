@@ -193,7 +193,7 @@ for doc in visualized_docset.take(2):
     display(Image(doc.binary_representation, height=500, width=500))
 ```
 
-3g. Next, we will merge the intital chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
+3g. Next, we will merge the initial chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
 
 ```python
 merged_docset = partitioned_docset.merge(GreedyTextElementMerger(tokenizer=HuggingFaceTokenizer("sentence-transformers/all-MiniLM-L6-v2"), max_tokens=512))
@@ -228,6 +228,8 @@ The rest endpoint for the Aryn OpenSearch container from the Quickstart is at lo
 
 
 ```python
+index = "local_development_example_index" # You can change this to something else if you'd like
+
 os_client_args = {
         "hosts": [{"host": "localhost", "port": 9200}],
         "http_compress": True,
@@ -238,8 +240,6 @@ os_client_args = {
         "ssl_show_warn": False,
         "timeout": 120,
     }
-
-index = "local_development_example_index" # You can change this to something else if you'd like
 
 index_settings =  {
         "body": {
@@ -272,6 +272,12 @@ index_settings =  {
 st_embed_docset.write.opensearch(os_client_args=os_client_args, index_name=index, index_settings=index_settings)
 ```
 
+3l. Finally, add a cell to tell you where to go next and which index you should be querying.  This cell is also useful when you re-execute the script as the output appears when all cells are done.
+
+```python
+print("Visit http://localhost:3000 and use the", index, " index to query these results in the UI")
+```
+
 4. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
 - Using your internet browser, visit http://localhost:3000 . Make sure the demo UI container is still running from the Quickstart.
 - Make sure the index selected in the dropdown has the same name you provided in step 3j
@@ -280,11 +286,11 @@ st_embed_docset.write.opensearch(os_client_args=os_client_args, index_name=index
 
 The results of the hybrid search are in the right hand panel, and you can click through to find the highlighted passage (step 3b enabled this). Though we are getting good results back from hybrid search, it would be nice if we could have the titles and other information for each passage. In the next section, we will iterate on our Sycamore job, and use generative AI to extract some metadata.
 
-## Add metadata exctraction using GenAI
+## Add metadata extraction using GenAI
 
-1. Going back to our notebook, let's add a cell after the cell we created in step 3f above. Then, restart the Sycamore processing job by rerunning the cells prior to this one.
+5a. Going back to our notebook, let's add a cell after the `visualized_docset` step and before the `merged_docset` step. You can do this by cell we created in step 3f above. Then, restart the Sycamore processing job by rerunning the cells prior to this one.
 
-2. In this cell, we will add prompt templates for extracting titles and authors. These prompts train a generative AI model to identify a title (or author) by giving examples, and then we will use the trained model to identify and extract them for each document.
+5b. In this cell, we will add prompt templates for extracting titles and authors. These prompts train a generative AI model to identify a title (or author) by giving examples, and then we will use the trained model to identify and extract them for each document.
 
 ```python
  title_context_template = """
@@ -335,25 +341,33 @@ author_context_template = """
   """
 ```
 
-3. Add another cell. In this cell, we will use Sycamore's entity extractor with the prompt templates. We are selecting OpenAI as the generative AI model to use for this extraction.
+5c. Add a following cell. In this cell, we will use Sycamore's entity extractor with the prompt templates. We are selecting OpenAI as the generative AI model to use for this extraction.
 
 ```python
-pdf_docset = (partitioned_docset
-              .extract_entity(entity_extractor=OpenAIEntityExtractor("title", llm=openai_llm, prompt_template=title_context_template))
-              .extract_entity(entity_extractor=OpenAIEntityExtractor("authors", llm=openai_llm, prompt_template=author_context_template)))
+entity_docset = (partitioned_docset
+                 .extract_entity(entity_extractor=OpenAIEntityExtractor("title", llm=openai_llm, prompt_template=title_context_template))
+                 .extract_entity(entity_extractor=OpenAIEntityExtractor("authors", llm=openai_llm, prompt_template=author_context_template)))
 
-pdf_docset = pdf_docset.spread_properties(["title", "authors"])
+entity_docset = entity_docset.spread_properties(["title", "authors"])
 
-pdf_docset.show(show_binary = False, show_elements=False)
+entity_docset.show(show_binary = False, show_elements=False)
 ```
 
 The output should show the title and author added to the elements in the DocSet.
 
-4. Change the index name you added in step 3j, so you can create and load a new index with your reprocessed data. Run the rest of the cells in the notebook, and load the data into OpenSearch.
+Since we have changed the output of this cell, we need to use the entity_docset rather than the
+partitioned_docset to create the merged_docset.  Adjust the next cell so that it looks like:
 
-5. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
+```python
+merged_docset = entity_docset.merge(GreedyTextElementMerger(tokenizer=HuggingFaceTokenizer("sentence-transformers/all-MiniLM-L6-v2"), max_tokens=512))
+merged_docset.show(show_binary = False)
+```
+
+5d. Change the index name set below (e.g. to `index = "local_development_example_index_withentity"`) that you added in step 3j so that when you run the remaining cells it will load into a new index. Otherwise the old and new data processed data would be intermingled. Run the rest of the cells in the notebook, and load the data into OpenSearch.
+
+5e. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
 - Using your internet browser, visit http://localhost:3000 . Make sure the demo UI container is still running from the Quickstart
 - Make sure the index selected in the dropdown has the same name you provided in the previous step
-- The titles should appear with the hybrid search results in the right panel
+- The titles should appear with the hybrid search results in the right panel. If they don't check that you both a) changed the index name, and b) used the new index in the UI.
 
 Congrats! You've developed and iterated on a Sycamore data preparation script locally, and used generative AI to extract metatdata and enrich your dataset. To productionize this use case, you could automate this processing job using the Sycamore container deployed in the Quickstart configuration.
