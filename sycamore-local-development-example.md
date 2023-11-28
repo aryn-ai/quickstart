@@ -184,43 +184,43 @@ def filter_func(doc: Document) -> bool:
     return doc.properties["page_number"] == 1
 
 partitioned_docset = pdf_docset.partition(partitioner=UnstructuredPdfPartitioner())
-docset = (partitioned_docset
-              .partition(partitioner=UnstructuredPdfPartitioner())
-
-#this part is for the visualization
+visualized_docset = (partitioned_docset
               .flat_map(split_and_convert_to_image)
               .map_batch(DrawBoxes, f_constructor_args=[font_path])
               .filter(filter_func))
 
-for doc in docset.take(2):
+for doc in visualized_docset.take(2):
     display(Image(doc.binary_representation, height=500, width=500))
 ```
 
 3g. Next, we will merge the intital chunks from the document segmentation into larger chunks. We will set the maximum token size so the larger chunk will still fit in the context window of our transformer model, which we will use to create vector embeddings in a later step. We have seen larger chunk sizes improve search relevance, as the larger chunk gives more contextual information about the data in the chunk to the transformer model.
 
 ```python
-pdf_docset = pdf_docset.merge(GreedyTextElementMerger(tokenizer=HuggingFaceTokenizer("sentence-transformers/all-MiniLM-L6-v2"), max_tokens=512))
+merged_docset = partitioned_docset.merge(GreedyTextElementMerger(tokenizer=HuggingFaceTokenizer("sentence-transformers/all-MiniLM-L6-v2"), max_tokens=512))
+merged_docset.show(show_binary = False)
 ```
+
+The output should show many a dict with an array of elements, each one with content like `'type': 'Section', 'binary_representation': b'...'`.
 
 3h. Now, we will explode the DocSet and prepare it for creating vector embeddings and loading into OpenSearch. The explode transform converts the elements of each document into top-level documents.
 
 ```python
-pdf_docset = pdf_docset.explode()
-pdf_docset.show(show_binary = False)
+exploded_docset = merged_docset.explode()
+exploded_docset.show(show_binary = False)
 ```
 
-The output should show the exploded DocSet.
+The output should show the exploded DocSet with no elements in the `'type': 'pdf'` entry and many elements with `'type': 'Section'`, and no elements.
 
 3i. We will now create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could choose a different embedding model depending on your use case.
 
 
 ```python
-pdf_docset = (pdf_docset
+st_embed_docset = (exploded_docset
               .embed(embedder=SentenceTransformerEmbedder(batch_size=100, model_name="sentence-transformers/all-MiniLM-L6-v2")))
-pdf_docset.show(show_binary = False)
+st_embed_docset.show(show_binary = False)
 ```
 
-The output should show the DocSet with vector embeddings.
+The output should show the DocSet with vector embeddings, e.g. `'embedding': '<384 floats>'` should be added to each of the sections.
 
 3j. Before loading the OpenSearch component of Aryn Search, we need to configure the Sycamore job to: 1/communicate with the Aryn OpenSearch container and 2/have the proper configuration for the vector and keyword indexes for hybrid search. Sycamore will then create and load those indexes in the final step.
 
@@ -239,7 +239,7 @@ os_client_args = {
         "timeout": 120,
     }
 
-index = "YOUR-INDEX-NAME"
+index = "local_development_example_index" # You can change this to something else if you'd like
 
 index_settings =  {
         "body": {
@@ -269,7 +269,7 @@ index_settings =  {
 3k. This is the final part of the Sycamore job. We will load the data and vector embeddings into the OpenSearch container using the configuration supplied above.
 
 ```python
-pdf_docset.write.opensearch(os_client_args=os_client_args, index_name=index, index_settings=index_settings)
+st_embed_docset.write.opensearch(os_client_args=os_client_args, index_name=index, index_settings=index_settings)
 ```
 
 4. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
