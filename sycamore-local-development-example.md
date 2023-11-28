@@ -290,7 +290,12 @@ The results of the hybrid search are in the right hand panel, and you can click 
 
 ## Add metadata extraction using GenAI
 
-5a. Going back to our notebook, let's add a cell after the `visualized_docset` step and before the `merged_docset` step. You can do this by cell we created in step 3f above. Then, restart the Sycamore processing job by rerunning the cells prior to this one.
+Now we are going to edit our existing notebook to show how you could adjust the Sycamore
+processing.  Because we are editing the notebook, we will be making changes to the cells partway
+through the notebook, and then editing some of the nearby cells to connect the new processing into
+the old processing.
+
+5a. Going back to our notebook, let's add a cell after the `visualized_docset` step and before the `merged_docset` step. You can do this by cell we created in step 3f above. 
 
 5b. In this cell, we will add prompt templates for extracting titles and authors. These prompts train a generative AI model to identify a title (or author) by giving examples, and then we will use the trained model to identify and extract them for each document.
 
@@ -357,7 +362,7 @@ entity_docset.show(show_binary = False, show_elements=False)
 
 The output should show the title and author added to the elements in the DocSet.
 
-Since we have changed the output of this cell, we need to use the entity_docset rather than the
+5d. Since we have changed the output of this cell, we need to use the entity_docset rather than the
 partitioned_docset to create the merged_docset.  Adjust the next cell so that it looks like:
 
 ```python
@@ -365,9 +370,11 @@ merged_docset = entity_docset.merge(GreedyTextElementMerger(tokenizer=HuggingFac
 merged_docset.show(show_binary = False)
 ```
 
-5d. Change the index name set below (e.g. to `index = "local_development_example_index_withentity"`) that you added in step 3j so that when you run the remaining cells it will load into a new index. Otherwise the old and new data processed data would be intermingled. Run the rest of the cells in the notebook, and load the data into OpenSearch.
+5e. Change the index name set below (e.g. to `index = "local_development_example_index_withentity"`) that you added in step 3j so that when you run the remaining cells it will load into a new index. Otherwise the old and new data processed data would be intermingled.
 
-5e. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
+5f. Run the rest of the cells in the notebook, and load the data into OpenSearch.
+
+5g. Once the data is loaded into OpenSearch, you can use the demo UI for conversational search on it.
 - Using your internet browser, visit http://localhost:3000 . Make sure the demo UI container is still running from the Quickstart
 - Make sure the index selected in the dropdown has the same name you provided in the previous step
 - The titles should appear with the hybrid search results in the right panel. If they don't check that you both a) changed the index name, and b) used the new index in the UI.
