@@ -209,7 +209,7 @@ exploded_docset = merged_docset.explode()
 exploded_docset.show(show_binary = False)
 ```
 
-The output should show the exploded DocSet with no elements in the `'type': 'pdf'` entry and many elements with `'type': 'Section'`, and no elements.
+The output should show the exploded DocSet with an empty 'elements' list in the `‘type’: ‘pdf’` entry, many entries with `‘type’: ‘Section’`, and no 'elements' sub-entry.
 
 3i. We will now create the vector embeddings for our DocSet. The model we selected is MiniLM, and you could choose a different embedding model depending on your use case.
 
