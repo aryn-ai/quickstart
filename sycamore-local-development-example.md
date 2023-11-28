@@ -295,7 +295,7 @@ processing.  Because we are editing the notebook, we will be making changes to t
 through the notebook, and then editing some of the nearby cells to connect the new processing into
 the old processing.
 
-5a. Going back to our notebook, let's add a cell after the `visualized_docset` step and before the `merged_docset` step. You can do this by cell we created in step 3f above. 
+5a. Scroll back in the notebook and add a cell between the `visualized_docset` cell and before the `merged_docset` cell. The new cell is between the ones you added in step 3f and 3g.
 
 5b. In this cell, we will add prompt templates for extracting titles and authors. These prompts train a generative AI model to identify a title (or author) by giving examples, and then we will use the trained model to identify and extract them for each document.
 
