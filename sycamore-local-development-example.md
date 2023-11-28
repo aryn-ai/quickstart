@@ -30,9 +30,9 @@ python3 -m venv .
 pip install sycamore-ai
 ```
 
-For certain PDF processing operations, you also need to install poppler, which you can do with the OS-native package manager of your choice. For example, the command for Homebrew on Mac OS is:
+For certain PDF processing operations, you also need to install poppler, which you can do with the OS-native package manager of your choice. 
 
-For MacOS:
+For example, the command for Homebrew on Mac OS is:
 
 ```
 brew install poppler
