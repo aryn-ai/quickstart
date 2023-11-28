@@ -200,7 +200,7 @@ merged_docset = partitioned_docset.merge(GreedyTextElementMerger(tokenizer=Huggi
 merged_docset.show(show_binary = False)
 ```
 
-The output should show many a dict with an array of elements, each one with content like `'type': 'Section', 'binary_representation': b'...'`.
+The output should show many a dict with an array of elements, and each element with content like `'type': 'Section', 'binary_representation': b'...'`.
 
 3h. Now, we will explode the DocSet and prepare it for creating vector embeddings and loading into OpenSearch. The explode transform converts the elements of each document into top-level documents.
 
