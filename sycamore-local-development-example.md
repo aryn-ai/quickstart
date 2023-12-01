@@ -29,6 +29,9 @@ Full command:
 ENABLE_TEXTRACT=false docker compose --profile=jupyter up --pull=always
 ```
 
+NOTE: If you downloaded the .env and compose.yaml files directly rather than via git, you will need
+to create a jupyter/bind_dir directory to start the Jupyter container.
+
 In order to maintain security, Jupyter uses a token to limit access to the notebook. For the first
 5 minutes the Jupyter container will periodically print out instructions for connecting. If you
 can't see them, you can get them by running:
