@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "Version-Info, Aryn Jupyter Branch: ${GIT_BRANCH}"
+echo "Version-Info, Aryn Jupyter Commit: ${GIT_COMMIT}"
+echo "Version-Info, Aryn Jupyter Diff: ${GIT_DIFF}"
+echo "Version-Info, Aryn Jupyter Architecture: $(uname -m)"
+
 mkdir -p $HOME/.jupyter
 JUPYTER_CONFIG_DOCKER=/app/work/docker_volume/jupyter_notebook_config.py
 
