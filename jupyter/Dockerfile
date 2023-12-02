@@ -11,7 +11,7 @@ COPY jupyter/docker-apt-packages.sh ./
 RUN /bin/bash docker-apt-packages.sh
 
 USER 54321
-RUN poetry run pip install notebook ipywidgets && rm -rf $POETRY_CACHE_DIR
+RUN poetry run pip install notebook ipywidgets 'opensearch-py>=2.4' && rm -rf $POETRY_CACHE_DIR
 RUN mkdir -p /app/work/docker_volume /app/work/bind_dir /app/work/examples
 RUN touch /app/work/AAA_SEE_README_FOR_PERSISTENT_DATA_DIRECTORIES
 COPY jupyter/entrypoint.sh ./

@@ -13,7 +13,7 @@ if [[ $(grep -c debian.org /tmp/proxy) -ge 1 ]]; then
 fi
 
 apt update
-apt -y install --no-install-recommends fonts-liberation
+apt -y install --no-install-recommends fonts-liberation less
 
 apt clean
 rm -rf /var/lib/apt/lists/*
