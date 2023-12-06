@@ -1,10 +1,4 @@
 #!/bin/bash
-
-echo "Version-Info, Aryn Jupyter Branch: ${GIT_BRANCH}"
-echo "Version-Info, Aryn Jupyter Commit: ${GIT_COMMIT}"
-echo "Version-Info, Aryn Jupyter Diff: ${GIT_DIFF}"
-echo "Version-Info, Aryn Jupyter Architecture: $(uname -m)"
-
 mkdir -p $HOME/.jupyter
 JUPYTER_CONFIG_DOCKER=/app/work/docker_volume/jupyter_notebook_config.py
 
@@ -55,4 +49,4 @@ rm /app/.local/share/jupyter/runtime/jpserver-*-open.html 2>/dev/null
 ) &
 
 cd /app/work
-poetry run jupyter notebook --no-browser --ip 0.0.0.0
+poetry run jupyter notebook --no-browser --ip 0.0.0.0 "$@"
