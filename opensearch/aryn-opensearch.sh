@@ -106,7 +106,10 @@ setup_persistent() {
     touch "${PERSISTENT_ENV_TMP}"
     sp_register_model_group
     # TODO: https://github.com/aryn-ai/sycamore/issues/152 - debug task id stability
+    sp_setup_reranking_model
+    sleep 2
     sp_setup_embedding_model
+    sleep 2
     sp_setup_openai_model
 
     sp_create_rag_pipeline
@@ -128,7 +131,8 @@ sp_cluster_settings() {
 	"memory_feature_enabled": "true",
 	"rag_pipeline_feature_enabled": "true",
 	"only_run_on_ml_node": "false",
-	"allow_registering_model_via_url": "true"
+	"allow_registering_model_via_url": "true",
+        "native_memory_threshold": 100
       }
     }
   }
@@ -225,6 +229,78 @@ END
     deploy_model "" "${EMBEDDING_TASK_ID}" "embedding"
     EMBEDDING_MODEL_ID="${MODEL_ID}"
     echo "EMBEDDING_MODEL_ID=${EMBEDDING_MODEL_ID}" >>"${PERSISTENT_ENV_TMP}"
+}
+
+sp_setup_reranking_model() {
+    local all_config=$(jq '@json' <<END
+{
+  "_name_or_path": "BAAI/bge-reranker-base",
+  "architectures": [
+    "XLMRobertaForSequenceClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "bos_token_id": 0,
+  "classifier_dropout": null,
+  "eos_token_id": 2,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "LABEL_0"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {"LABEL_0": 0},
+  "layer_norm_eps": 1e-05,
+  "max_position_embeddings": 514,
+  "model_type": "xlm-roberta",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "output_past": true,
+  "pad_token_id": 1,
+  "position_embedding_type": "absolute",
+  "torch_dtype": "float32",
+  "transformers_version": "4.33.3",
+  "type_vocab_size": 1,
+  "use_cache": true,
+  "vocab_size": 250002
+}
+END
+)
+
+    local file="${ARYN_STATUSDIR}/curl.reranking_model"
+    _curl_json -XPOST "${BASE_URL}/_plugins/_ml/models/_register" \
+        -o "${file}" \
+        --data @- <<END || die "Error registering reranker"
+{
+  "name": "BAAI/bge-reranker-base-quantized",
+  "version": "1.0.0",
+  "description": "Cross Encoder text similarity model",
+  "model_format": "ONNX",
+  "function_name": "TEXT_SIMILARITY",
+  "model_group_id": "${MODEL_GROUP_ID}",
+  "model_content_hash_value": "39e7f4df9124d1983f3a77ac6bfd4510079aeb59811f9d1d3342bba69c809914",
+  "model_config": {
+    "model_type": "roberta",
+    "embedding_dimension": 1,
+    "framework_type": "huggingface_transformers",
+    "all_config": ${all_config}
+  },
+  "url": "https://aryn-public.s3.amazonaws.com/models/BAAI/bge-reranker-base-quantized.zip"
+}
+END
+
+    cat "${file}"
+    local id=$(jq -r '.task_id' "${file}")
+    [[ -z "${id}" || "${id}" == "null" ]] && die "No rerank model task ID"
+    RERANKING_TASK_ID="${id}"
+    echo "RERANKING_TASK_ID='${RERANKING_TASK_ID}'" >>"${PERSISTENT_ENV_TMP}"
+    GET_TASK_ID="${RERANKING_TASK_ID}"
+    wait_or_die get_task "even that was not enough time" 240
+
+    deploy_model "" "${RERANKING_TASK_ID}" "reranking"
+    RERANKING_MODEL_ID="${MODEL_ID}"
+    echo "RERANKING_MODEL_ID=${RERANKING_MODEL_ID}" >>"${PERSISTENT_ENV_TMP}"
 }
 
 sp_setup_openai_model() {
@@ -384,6 +460,18 @@ sp_create_rag_pipeline() {
   ],
   "response_processors": [
     {
+      "rerank": {
+        "tag": "rerank_processor",
+        "description": "Processor that reranks using a cross encoder model",
+        "text_similarity": {
+          "model_id": "${RERANKING_MODEL_ID}"
+        },
+        "context": {
+          "document_fields": ["text_representation"]
+        }
+      }
+    },
+    {
       "retrieval_augmented_generation": {
         "tag": "openai_pipeline",
         "description": "Pipeline Using OpenAI Connector",
@@ -418,6 +506,20 @@ sp_create_non_rag_pipeline() {
         }
       }
     }
+  ],
+  "response_processors": [
+    {
+      "rerank": {
+        "tag": "rerank_processor",
+        "description": "Processor that reranks using a cross encoder model",
+        "text_similarity": {
+          "model_id": "${RERANKING_MODEL_ID}"
+        },
+        "context": {
+          "document_fields": ["text_representation"]
+        }
+      }
+    }
   ]
 }
 END
@@ -426,6 +528,7 @@ END
 setup_transient() {
     deploy_model "${EMBEDDING_MODEL_ID}" "${EMBEDDING_TASK_ID}" "embedding"
     deploy_model "${OPENAI_MODEL_ID}" "${OPENAI_TASK_ID}" "OpenAI"
+    deploy_model "${RERANKING_MODEL_ID}" "${RERANKING_TASK_ID}" "reranking"
 }
 
 main

@@ -1,7 +1,7 @@
 # Repo name: arynai/opensearch
 
-ARG TAG=2.11.0
-FROM opensearchproject/opensearch:$TAG
+ARG TAG=2.12.0
+FROM 237550789389.dkr.ecr.us-east-1.amazonaws.com/opensearch-experimental:rrk-2.12-latest
 USER 0
 RUN yum install -y jq && yum clean all
 USER 1000
