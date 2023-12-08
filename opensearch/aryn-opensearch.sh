@@ -279,14 +279,14 @@ END
   "model_format": "ONNX",
   "function_name": "TEXT_SIMILARITY",
   "model_group_id": "${MODEL_GROUP_ID}",
-  "model_content_hash_value": "39e7f4df9124d1983f3a77ac6bfd4510079aeb59811f9d1d3342bba69c809914",
+  "model_content_hash_value": "04157d66d847d08b3d2b51ad36cf0e1fb82afadb8086212a1d2bac2b7d6fe08a",
   "model_config": {
     "model_type": "roberta",
     "embedding_dimension": 1,
     "framework_type": "huggingface_transformers",
     "all_config": ${all_config}
   },
-  "url": "https://aryn-public.s3.amazonaws.com/models/BAAI/bge-reranker-base-quantized.zip"
+  "url": "https://aryn-public.s3.amazonaws.com/models/BAAI/bge-reranker-base-quantized-2.zip"
 }
 END
 
